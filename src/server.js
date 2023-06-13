@@ -6,8 +6,8 @@ const cors = require('cors');
 const fs = require('fs');
 
 const user = require('./router/userRoute');
-const home = require('./router/home');
-const inventario = require('./router/inventario')
+const home = require('./router/homeRoute');
+const inventario = require('./router/inventoryRoute');
 
 var path = require('path');
 const fileUpload = require('express-fileupload');
@@ -24,12 +24,15 @@ app.use(fileUpload({
 }));
 app.use(cors());
 
+app.use('/user', user);
+app.use('/home', home);
+app.use('/inventario', inventario);
+
+// Rota 404
+app.use((req, res, next) => {
+    res.status(404).send('Página não encontrada');
+});
 
 app.listen(port, () => {
     console.log(`Link http://localhost:${port}`);
 });
-
-
-app.use('/list', user);
-app.use('/home', home);
-app.use('/inventario', inventario);

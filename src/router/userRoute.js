@@ -6,7 +6,7 @@ const {
     loginRouteHandler,
     registerRouteHandler,
     resetPasswordRouteHandler
-} = require("../controllers/auth");
+} = require("../controllers/userController");
 
 
 router.use(cookieParser());
@@ -15,8 +15,10 @@ router.use(cookieParser());
 router.post('/auth', async (req, res) => {
     const { username, password } = req.body;    
     await loginRouteHandler(req, res, username, password);
+    req.session.save(username)
     return res.status(401).json({ message: 'Credenciais inválidas' });
 });
+
 
 router.post('/logout', (req, res) => {
     req.session.destroy();
@@ -29,10 +31,12 @@ router.post('/registrar', async (req, res) => {
     await registerRouteHandler(req, res, username, name, email, password);
 });
 
+
 router.post('/esqueci-senha', async (req, res) => {
     const { email } = req.body;
     await forgotPasswordRouteHandler(req, res, email);
 });
+
 
 router.post('/reset', async (req, res) => {
     await resetPasswordRouteHandler(req, res);

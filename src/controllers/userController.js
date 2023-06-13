@@ -6,7 +6,6 @@ const userModel = require("../models/users");
 const jwt = require('jsonwebtoken');
 
 
-
 const transporter = nodemailer.createTransport({
   host: "smtp.mailtrap.io",
   port: 2525,
@@ -15,9 +14,6 @@ const transporter = nodemailer.createTransport({
     pass: process.env.MAILTRAP_PASSWORD,
   }
 });
-
-
-
 
 const loginRouteHandler = async (req, res, username, password) => {
   let foundUser = await userModel.findAll({ where: { username: username } });
@@ -51,6 +47,7 @@ const loginRouteHandler = async (req, res, username, password) => {
         access_token: token,
         refresh_token: token,
       });
+
     } else {
       return res.status(400).json({
         errors: [{ detail: "Senha inválida" }],
@@ -58,10 +55,6 @@ const loginRouteHandler = async (req, res, username, password) => {
     }
   }
 };
-
-
-
-
 
 
 
@@ -101,13 +94,10 @@ const registerRouteHandler = async (req, res, username, name, email, password) =
       access_token: token,
       refresh_token: token,
     });
-  } catch (error) {
-    console.error("Erro ao inserir usuário no banco de dados:", error);
+  } catch (error) {    
     return res.status(500).json({ message: "Erro interno do servidor" });
   }
 };
-
-
 
 
 
@@ -123,10 +113,10 @@ const forgotPasswordRouteHandler = async (req, res, email) => {
     let token = randomToken(20);
 
     let info = await transporter.sendMail({
-      from: "admin@gruposaojudas.com", // email saida
+      from: process.env.EMAIL_ADMIN, // email saida
       to: email, // email que vai ser recuperado
       subject: "Redefinir senha", // Assunto
-      html: `<p>Você solicitou a alteração de sua senha. Caso essa solicitação não tenha sido feita por você, entre em contato conosco. Acesse <a href='${process.env.APP_URL_CLIENT}/auth/reset-password?token=${token}&email=${email}'>este link</a> para redefinir sua senha</p>`, // html body
+      html: `<p>Você solicitou a alteração de sua senha. Caso essa solicitação não tenha sido feita por você, entre em contato conosco. Acesse <a href='${process.env.APP_URL_CLIENT}/auth/reset-password?token=${token}&email=${email}'>este link</a> para redefinir sua senha</p>`, // Corpo
     });
     const dataSent = {
       data: "password-forgot",
@@ -139,6 +129,8 @@ const forgotPasswordRouteHandler = async (req, res, email) => {
   }
 };
 
+
+
 const resetPasswordRouteHandler = async (req, res) => {
   const foundUser = await userModel.findAll({
     email: req.body
@@ -150,7 +142,7 @@ const resetPasswordRouteHandler = async (req, res) => {
     });
   } else {
     const { password, password_confirmation } = req.body.data.attributes;
-    // validate password
+    // validar a senha
     if (password.length < 8) {
       return res.status(400).json({
         errors: {
