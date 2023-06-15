@@ -7,37 +7,50 @@ const userModel = {
         const { username, name, email, password } = user;
         const [result] = await (await conn).query(`
         INSERT INTO users (username, name, email, password, created_at, updated_at)
-        VALUES (?, ?, ?, ?, NOW(), NOW())`, [username, name, email, password]);
-        (await conn).release;
+        VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)`, [username, name, email, password]);
         return result.insertId;
     },
 
     findById: async (id) => {
         const [rows] = await (await conn).query('SELECT * FROM users WHERE id = ?', [id]);
-        (await conn).release;
         return rows[0];
     },
 
     findAll: async () => {
         const [rows] = await (await conn).query('SELECT * FROM users');
-        (await conn).release;
-        return rows;
+        return rows[0];
     },
 
     update: async (id, user) => {
         const { username, name, email, password, updated_at } = user;
-        await conn.execute(`UPDATE users
-        SET username = ?, name = ?, email = ?, password = ?,  updated_at = TIMESTAMP
-        WHERE id = ?`, [username, name, email, password, updated_at, id]);
-        (await conn).release;
+        const [result] = await (await conn).execute(`UPDATE users
+        SET username = ?, name = ?, email = ?, password = ?,  update_at=CURRENT_TIMESTAMP
+        WHERE id = ?`, [username, name, email, password, id]);
+        return result.affectedRows;
+    },
+
+    updateOne: async (user) => {
+        const { email, password } = user;
+        const [result] = await (await conn).execute(`UPDATE users
+        SET  password = ?,  update_at=CURRENT_TIMESTAMP
+        WHERE email = ?`, [password, email]);
+        return result.affectedRows;
     },
 
     delete: async (id) => {
-        const query = 'DELETE FROM users WHERE id = ?';
-        await (await conn).query(query, [id]);
-        (await conn).release;
-    }
+        const [result] = await (await conn).execute('DELETE FROM users WHERE id = ?', [id]);
+        return result.affectedRows;
+    },
 
+    closeConection: async () => {
+        try {
+            if (conn) {
+                await (await conn).release;
+            }
+        } catch (error) {
+            console.log('erro ao fechar conexão', error);
+        }
+    }
 };
 
 module.exports = userModel;

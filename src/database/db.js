@@ -40,7 +40,7 @@ async function showInventory() {
         console.error('Erro ao mostrar o inventário', error);
         throw error;
     } finally {
-        if (conn) conn.release();
+        if (conn){ await (await conn).release();}
     }
 }
 
@@ -48,8 +48,5 @@ async function showInventory() {
 
 module.exports = {
     connect,
-    showInventory: showInventory,
-    // createITAsset: createITAsset,
-    // editAsset: editAsset,
-    // deleteAsset: deleteAsset,
+    showInventory: showInventory
 };
