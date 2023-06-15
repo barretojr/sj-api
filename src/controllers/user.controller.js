@@ -1,10 +1,9 @@
-require('dotenv').config();
+require("dotenv").config();
 const nodemailer = require("nodemailer");
 const randomToken = require("random-token");
 const bcrypt = require("bcrypt");
-const userModel = require("../models/users");
-const jwt = require('jsonwebtoken');
-
+const userModel = require("../models/users.model");
+const jwt = require("jsonwebtoken");
 
 const transporter = nodemailer.createTransport({
   host: process.env.MAIL_HOST,
@@ -13,29 +12,36 @@ const transporter = nodemailer.createTransport({
   auth: {
     user: process.env.MAIL_USER,
     pass: process.env.MAIL_PASSWORD,
-  }
+  },
 });
 
-async function listRouteHandler(req, res){
-  try{
+async function listRouteHandler(req, res) {
+  try {
     const foundUser = await userModel.findAll();
     res.json({ listagem: foundUser });
-  }catch (error) {
-      return res.status(500).json({
-         message: "Ocorreu um erro ao listar os Usuários"         
-      });
-  }finally {
+  } catch (error) {
+    return res.status(500).json({
+      message: "Ocorreu um erro ao listar os Usuários",
+    });
+  } finally {
     await userModel.closeConection();
   }
 }
 
 async function loginRouteHandler(req, res, username, password) {
   try {
-    const foundUser = await userModel.findAll({ where: { username: username } });
+    const foundUser = await userModel.findAll({
+      where: { username: username },
+    });
 
     if (foundUser.length === 0) {
       return res.status(400).json({
-        errors: [{ detail: "As credenciais não correspondem a nenhum usuário existente" }],
+        errors: [
+          {
+            detail:
+              "As credenciais não correspondem a nenhum usuário existente",
+          },
+        ],
       });
     } else {
       const userPassword = foundUser[0].password;
@@ -62,18 +68,16 @@ async function loginRouteHandler(req, res, username, password) {
           access_token: token,
           refresh_token: token,
         });
-
       } else {
         return res.status(400).json({
           errors: [{ detail: "Senha inválida" }],
         });
       }
     }
-
   } catch (error) {
     return res.status(500).json({
       message: "ocorreu um erro",
-      error: error
+      error: error,
     });
   } finally {
     await userModel.closeConection();
@@ -130,7 +134,9 @@ async function forgotPasswordRouteHandler(req, res) {
     const foundUser = await userModel.findAll({ email: email });
     if (!foundUser) {
       return res.status(400).json({
-        error: { email: ["O e-mail não corresponde a nenhum usuário existente."] },
+        error: {
+          email: ["O e-mail não corresponde a nenhum usuário existente."],
+        },
       });
     } else {
       const token = randomToken(20);
@@ -144,7 +150,7 @@ async function forgotPasswordRouteHandler(req, res) {
             <p style="font-size: 16px;">Você solicitou a alteração de sua senha. Caso essa solicitação não tenha sido feita por você, entre em contato conosco.</p>
             <p style="font-size: 16px;">Acesse <a href="${process.env.APP_URL_CLIENT}/user/esqueci-senha?token=${token}&email=${email}" style="color: #007bff; text-decoration: none;">este link</a> para redefinir sua senha.</p>
           </div>
-        `
+        `,
       };
 
       const mailSent = await transporter.sendMail(infomail);
@@ -162,15 +168,22 @@ async function forgotPasswordRouteHandler(req, res) {
     }
   } catch (error) {
     console.log({ caiunocatch: error });
-    return res.status(500).json({ caiunocatch: "Ocorreu um erro ao processar a solicitação." });
+    return res
+      .status(500)
+      .json({ caiunocatch: "Ocorreu um erro ao processar a solicitação." });
   } finally {
     await userModel.closeConection();
   }
 }
 
-
-
-async function resetPasswordRouteHandler(req, res, email, password, cPass, token) {
+async function resetPasswordRouteHandler(
+  req,
+  res,
+  email,
+  password,
+  cPass,
+  token
+) {
   try {
     const foundUser = await userModel.findAll({ email: email });
     if (!foundUser) {
@@ -210,11 +223,10 @@ async function resetPasswordRouteHandler(req, res, email, password, cPass, token
   }
 }
 
-
 module.exports = {
   listRouteHandler,
   loginRouteHandler,
   registerRouteHandler,
   forgotPasswordRouteHandler,
-  resetPasswordRouteHandler
-}
+  resetPasswordRouteHandler,
+};
