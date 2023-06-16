@@ -20,6 +20,7 @@ router.get("/show", async (req, res, next) => {
   }
 });
 
+
 router.post("/auth", async (req, res) => {
   const { username, password } = req.body;
   const authenticationResult = await loginRouteHandler(
@@ -32,7 +33,7 @@ router.post("/auth", async (req, res) => {
     req.session.save(username);
     return res.sendStatus(200);
   } else {
-    return res.status(401).json({ message: "Credenciais inválidas" });
+    return res.status(401)
   }
 });
 

@@ -8,7 +8,7 @@ const inventario = require("./inventory.route");
 
 app.use("/user", user);
 app.use("/home", home);
-app.use("/inventario", eAdmin, inventario);
+app.use("/inventario", inventario);
 
 // Rota 404
 app.use((req, res, next) => {

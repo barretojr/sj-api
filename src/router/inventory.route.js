@@ -1,7 +1,9 @@
 const express = require("express");
 const router = express.Router();
-const database = require("../database/db");
+const{ eAdmin, eUser} = require('../middleware/eAuth')
+
 const {
+  getfull,
   getInvent,
   createInvent,
   updateInvent,
@@ -10,10 +12,11 @@ const {
 
 router.get("/", async (req, res) => {
   try {
-    const listagem = await database.showInventory();
-    res.json({ listagem });
+    const inventario = await getfull(req, res);
+    return res.json({ listagem: inventario });
   } catch (error) {
-    res.status(500).send("Ocorreu um erro ao exibir os dados do servidor");
+    console.log("erro na rota /", error);
+    return res.status(500);
   }
 });
 
@@ -21,9 +24,9 @@ router.get("/show/:id", async (req, res) => {
   const { id } = req.params;
   try {
     const inventario = await getInvent(req, res, id);
-    res.json({ listagem: inventario });
+    return res.json({ listagem: inventario });
   } catch (error) {
-    res.status(400);
+    return res.status(400);
   }
 });
 
@@ -41,7 +44,6 @@ router.post("/register", async (req, res) => {
   } = req.body;
   try {
     await createInvent(
-      req,
       res,
       patrimonio,
       unidade,
@@ -54,11 +56,7 @@ router.post("/register", async (req, res) => {
       data_compra
     );
   } catch (error) {
-    console.log(error);
-    res.status(500).json({
-      message: "ocorreu um erro ao registrar o inventario",
-      error: error,
-    });
+    return res.status(500);
   }
 });
 
@@ -76,7 +74,6 @@ router.put("/update/:id", async (req, res) => {
   } = req.body;
   try {
     await updateInvent(
-      req,
       res,
       id,
       unidade,
@@ -97,10 +94,10 @@ router.put("/update/:id", async (req, res) => {
 router.delete("/delete/:id", async (req, res) => {
   const { id } = req.params;
   try {
-    await deleteInvent(req, res, id);
-    res.send("Inventário excluído com sucesso");
+    await deleteInvent(res, id);
+    return res.send("Inventário excluído com sucesso");
   } catch (error) {
-    res.status(500);
+    return res.status(500);
   }
 });
 

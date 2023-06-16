@@ -1,5 +1,27 @@
 const inventModel = require("../models/invent.model");
 
+const getfull = async (req, res) => {
+  try {
+    const foundInvent = await inventModel.showAll();
+    if (!foundInvent) {
+      req.flash("msg_error", "Erro ao listar inventario");
+      return res.status(400).json({
+        message: "Não foi possivel encontar o inventario",
+      });
+    }
+    res.json({ listagem: foundInvent });
+  } catch (error) {
+    
+    req.flash("msg_error", "Ocorreu um erro");
+    return res.status(500).json({
+      message: "erro ao listar",
+    });
+
+  } finally {
+    await inventModel.closeConection();
+  }
+};
+
 const getInvent = async (req, res, patrimonio) => {
   try {
     const foundInvent = await inventModel.findById(patrimonio);
@@ -10,9 +32,9 @@ const getInvent = async (req, res, patrimonio) => {
     }
     res.json({ listagem: foundInvent });
   } catch (error) {
+    req.flash("msg_error", "Ocorreu um erro");
     return res.status(500).json({
       message: "item não encontrado",
-      error: error,
     });
   } finally {
     await inventModel.closeConection();
@@ -36,9 +58,8 @@ const createInvent = async (
   if (foundInvent) {
     return res.status(400).json({ message: "item já cadastrado" });
   }
-  const currencyRegex = /[\D]/g;
-  const valorestimNumerico = Number(
-    valorestim?.replace(currencyRegex, "").replace(",", ".")
+  const valorestimNum = Number(
+    valorestim.replace(/[^\d.,]/g, "").replace(",", ".")
   );
   const parts = data_compra.split("/");
   const formattedDate = `${parts[2]}/${parts[1]}/${parts[0]}`;
@@ -48,18 +69,20 @@ const createInvent = async (
     descricao: descricao,
     modelo: modelo,
     localizacao: localizacao,
-    valorestim: valorestimNumerico,
+    valorestim: valorestimNum,
     usuario: usuario,
     nserie: nserie,
     data_compra: formattedDate,
   };
   try {
     await inventModel.create(invent);
+    req.flash("msg_none", "Item cadastrado");
     res.redirect("/inventario/");
   } catch (error) {
+    console.log(error);
+    req.flash("msg_error", "Ocorreu um erro");
     return res.status(500).json({
       message: "Erro interno do servidor",
-      error: error,
     });
   } finally {
     await inventModel.closeConection();
@@ -103,11 +126,12 @@ const updateInvent = async (
       data_compra: formattedDate,
     };
     await inventModel.update(id, invent);
+    req.flash("msg_none", "Item Alterado");
     return res.redirect("/inventario/");
   } catch (error) {
+    req.flash("msg_error", "Ocorreu um erro");
     return res.status(500).json({
       message: "Erro interno do servidor",
-      error: error,
     });
   } finally {
     await inventModel.closeConection();
@@ -123,11 +147,15 @@ const deleteInvent = async (req, res, patrimonio) => {
       });
     }
     await inventModel.delete(patrimonio);
+
+    req.flash("msg_none", "Item excluido com sucesso");
     return res.redirect("/inventario");
+
   } catch (error) {
+
+    req.flash("msg_error", "Ocorreu um erro ao excluir o item");
     return res.status(500).json({
       message: "ocorreu um erro ao excluir o item",
-      error: error,
     });
   } finally {
     await inventModel.closeConection();
@@ -135,6 +163,7 @@ const deleteInvent = async (req, res, patrimonio) => {
 };
 
 module.exports = {
+  getfull,
   getInvent,
   createInvent,
   updateInvent,

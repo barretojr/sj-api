@@ -37,6 +37,21 @@ const inventModel = {
     return result.insertId;
   },
 
+  showAll: async () => {
+    const [rows] = await (await conn).execute('SELECT * FROM Inventario');
+    const formattedRows = rows.map((row) => {
+      if (row.data_compra !== null) {
+        const dateValue = row.data_compra.toISOString();
+        const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+        const formattedDataCompra = new Date(dateValue).toLocaleDateString('pt-BR', options);
+        return { ...row, formattedDataCompra };
+      } else {
+        return { ...row, data_compra: 'Sem data' };
+      }
+    });
+    return formattedRows;
+  },
+
   findById: async (idpatrimonio) => {
     const [rows] = await (
       await conn
@@ -46,6 +61,18 @@ const inventModel = {
 
   findAll: async () => {
     const [rows] = await (await conn).query("SELECT * FROM Inventario");
+    rows.forEach((row) => {
+      if (row.data_compra !== null) {
+        const dateValue = row.data_compra.toISOString();
+        const options = { year: "numeric", month: "2-digit", day: "2-digit" };
+        row.formattedDataCompra = new Date(dateValue).toLocaleDateString(
+          "pt-BR",
+          options
+        );
+      } else {
+        row.formattedDataCompra = "Sem data";
+      }
+    });
     return rows[0];
   },
 

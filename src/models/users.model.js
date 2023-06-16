@@ -7,24 +7,24 @@ const userModel = {
     const { username, name, email, password } = user;
     const [result] = await (
       await conn
-    ).query(
+    ).execute(
       `
         INSERT INTO users (username, name, email, password, created_at, updated_at)
         VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)`,
       [username, name, email, password]
     );
     return result.insertId;
-  },
+  },  
 
   findById: async (id) => {
     const [rows] = await (
       await conn
-    ).query("SELECT * FROM users WHERE id = ?", [id]);
+    ).execute("SELECT * FROM users WHERE id = ?", [id]);
     return rows[0];
   },
 
   findAll: async () => {
-    const [rows] = await (await conn).query("SELECT * FROM users");
+    const [rows] = await (await conn).execute("SELECT * FROM users");
     return rows[0];
   },
 

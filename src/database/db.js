@@ -37,7 +37,7 @@ async function showInventory() {
         row.formattedDataCompra = "Sem data";
       }
     });
-    return rows;
+    return rows[0];
   } catch (error) {
     console.error("Erro ao mostrar o inventário", error);
     throw error;

@@ -8,6 +8,7 @@ const fileUpload = require("express-fileupload");
 const app = express();
 const port = 3001;
 const routes = require("./router/routes");
+const flash = require("connect-flash");
 
 app.use(session({ secret: process.env.SECRET }));
 app.use(bodyParser.json());
@@ -22,6 +23,7 @@ app.use(
 );
 app.use(cors());
 
+app.use(flash());
 app.use((req, res, next) => {
   res.locals.msg_sucess = req.flash("msg_sucess");
   res.locals.msg_none = req.flash("msg_none");
