@@ -7,7 +7,7 @@ module.exports = {
       "msg_error",
       "Acesso restrito. Você precisa ser um administrador."
     );
-    res.redirect("/");
+    return res.redirect("/user/login");
   },
 
   eUser: function (req, res, next) {

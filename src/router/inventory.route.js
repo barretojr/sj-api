@@ -44,6 +44,7 @@ router.post("/register", async (req, res) => {
   } = req.body;
   try {
     await createInvent(
+      req,
       res,
       patrimonio,
       unidade,
@@ -74,6 +75,7 @@ router.put("/update/:id", async (req, res) => {
   } = req.body;
   try {
     await updateInvent(
+      req,
       res,
       id,
       unidade,
@@ -94,7 +96,7 @@ router.put("/update/:id", async (req, res) => {
 router.delete("/delete/:id", async (req, res) => {
   const { id } = req.params;
   try {
-    await deleteInvent(res, id);
+    await deleteInvent(req,res, id);
     return res.send("Inventário excluído com sucesso");
   } catch (error) {
     return res.status(500);

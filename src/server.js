@@ -6,7 +6,7 @@ const cors = require("cors");
 const path = require("path");
 const fileUpload = require("express-fileupload");
 const app = express();
-const port = 3001;
+const fs = require("fs");
 const routes = require("./router/routes");
 const flash = require("connect-flash");
 
@@ -35,6 +35,5 @@ app.use((req, res, next) => {
 
 app.use(routes);
 
-app.listen(port, () => {
-  console.log(`Link http://localhost:${port}`);
-});
+
+app.listen(3001)

@@ -14,17 +14,20 @@ const userModel = {
       [username, name, email, password]
     );
     return result.insertId;
-  },  
+  },
 
   findById: async (id) => {
     const [rows] = await (
       await conn
-    ).execute("SELECT * FROM users WHERE id = ?", [id]);
+    ).execute("SELECT * FROM users WHERE userId = ?", [id]);
     return rows[0];
   },
 
   findAll: async () => {
     const [rows] = await (await conn).execute("SELECT * FROM users");
+    await (
+      await conn
+    ).release;
     return rows[0];
   },
 
@@ -41,6 +44,17 @@ const userModel = {
     return result.affectedRows;
   },
 
+  updateToken: async (user) => {
+    const { email, token } = user;
+    const [result] = await (
+      await conn
+    ).execute(
+      `UPDATE users SET token=?, updated_at=CURRENT_TIMESTAMP WHERE email=?;`,
+      [token, email]
+    );
+    return result.affectedRows;
+  },
+  
   updateOne: async (user) => {
     const { email, password } = user;
     const [result] = await (

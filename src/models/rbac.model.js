@@ -3,12 +3,28 @@ const database = require("../database/db");
 const conn = database.connect();
 
 const rbac = {
+  findRoleById: async (roleId) => {
+    const { role } = roleId;
+    const [result] = await (
+      await conn
+    ).execute(`SELECT * FROM roles WHERE roleId = ?;`, [role]);
+    return result[0];
+  },
+
   createRole: async (descricao) => {
     const { desc } = descricao;
     const [result] = await (
       await conn
     ).execute(`INSERT INTO roles (descricao) VALUES(?);`, [desc]);
     return result.insertId;
+  },
+
+  findPermissionById: async (permissionId) => {
+    const { permission } = permissionId;
+    const [result] = await (
+      await conn
+    ).execute(`SELECT * FROM permission WHERE permissionId = ?`, [permission]);
+    return result[0];
   },
 
   createPermission: async (descricao) => {

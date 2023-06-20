@@ -152,12 +152,17 @@ async function forgotPasswordRouteHandler(req, res) {
           </div>
         `,
       };
-
+      const emailtoken = {
+        token: token,
+        email: email,
+      };
       const mailSent = await transporter.sendMail(infomail);
-      console.log("Email enviado com sucesso", mailSent);
+      if (mailSent) {
+        await userModel.updateToken(emailtoken);
+      }
 
       const dataSent = {
-        data: "password-forgot",
+        data: "esqueci-senha",
         attributes: {
           redirect_url: `${process.env.APP_URL_API}/esqueci-senha`,
           email: email,
@@ -208,6 +213,7 @@ async function resetPasswordRouteHandler(
     }
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
+
     await userModel.updateOne(
       { email: foundUser.email },
       { $set: { password: hashedPassword } }
