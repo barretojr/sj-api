@@ -1,10 +1,10 @@
-const express = require("express");
+const express = require( "express");
 const router = express.Router();
 const {
   forgotPasswordRouteHandler,
   registerRouteHandler,
   resetPasswordRouteHandler,
-} = require("../controllers/user.controller");
+} = require( "../controllers/user.controller");
 
 router.post("/registrar", async (req, res) => {
   const { username, name, email, password } = req.body;

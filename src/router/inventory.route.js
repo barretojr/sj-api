@@ -1,6 +1,6 @@
 const express = require("express");
+const { eAdmin, eUser } = require("../middleware/eAuth");
 const router = express.Router();
-const{ eAdmin, eUser} = require('../middleware/eAuth')
 
 const {
   getfull,
@@ -12,13 +12,30 @@ const {
 
 router.get("/", async (req, res) => {
   try {
-    const inventario = await getfull(req, res);
-    return res.json({ listagem: inventario });
+    const inventario = await getfull(req, res);    
+    const inventarioSemReferenciasCirculares = removeReferenciasCirculares(inventario);
+    return res.json({ listagem: inventarioSemReferenciasCirculares });
   } catch (error) {
     console.log("erro na rota /", error);
-    return res.status(500);
+    return res.status(500)
   }
 });
+
+function removeReferenciasCirculares(objeto) {
+  const cache = new Set();
+  return JSON.parse(
+    JSON.stringify(objeto, function (chave, valor) {
+      if (typeof valor === "object" && valor !== null) {
+        if (cache.has(valor)) {          
+          return;
+        }
+        cache.add(valor);
+      }
+      return valor;
+    })
+  );
+}
+
 
 router.get("/show/:id", async (req, res) => {
   const { id } = req.params;
@@ -96,7 +113,7 @@ router.put("/update/:id", async (req, res) => {
 router.delete("/delete/:id", async (req, res) => {
   const { id } = req.params;
   try {
-    await deleteInvent(req,res, id);
+    await deleteInvent(req, res, id);
     return res.send("Inventário excluído com sucesso");
   } catch (error) {
     return res.status(500);

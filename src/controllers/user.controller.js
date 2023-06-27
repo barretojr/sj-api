@@ -1,9 +1,10 @@
 require("dotenv").config();
 const nodemailer = require("nodemailer");
 const randomToken = require("random-token");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const userModel = require("../models/users.model");
 const jwt = require("jsonwebtoken");
+const { v4 } = require("uuid");
 
 const transporter = nodemailer.createTransport({
   host: process.env.MAIL_HOST,

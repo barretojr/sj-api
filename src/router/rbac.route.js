@@ -1,4 +1,4 @@
-const express = require("express");
+const express = require( "express");
 const router = express.Router();
 const {
   setRole,
@@ -6,7 +6,7 @@ const {
   permissionRole,
   userPermission,
   roleUser,
-} = require("../controllers/rbac.controller");
+} = require( "../controllers/rbac.controller");
 
 router.post("/set/permission", async (req, res) => {
   const { permissionId, descPermission } = req.body;

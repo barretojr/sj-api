@@ -26,10 +26,12 @@ router.post("/auth", async (req, res) => {
     password
   );
   if (authenticationResult.success) {
-    req.session.save(username);
-    return res.sendStatus(200);
+    const token = authenticationResult.token;
+    req.session.username = username;
+    res.cookie("token", token);
+    return res.redirect("/");
   } else {
-    return res.status(401)
+    return;
   }
 });
 
@@ -37,6 +39,5 @@ router.post("/logout", (req, res) => {
   req.session.destroy();
   return res.sendStatus(204);
 });
-
 
 module.exports = router;

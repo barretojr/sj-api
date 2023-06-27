@@ -1,18 +1,21 @@
 require("dotenv").config();
-const express = require("express");
-const session = require("express-session");
-const bodyParser = require("body-parser");
-const cors = require("cors");
-const path = require("path");
-const fileUpload = require("express-fileupload");
+const express =require("express");
+const session =require ("express-session");
+const cookieParser = require("cookie-parser")
+const bodyParser =require ("body-parser");
+const cors =require ("cors");
+const path =require ("path");
+const fileUpload =require ("express-fileupload");
 const app = express();
-const fs = require("fs");
-const routes = require("./router/routes");
-const flash = require("connect-flash");
+const fs = require ("fs");
+const routes =require ("./router/routes");
+const flash =require ("connect-flash");
+
 
 app.use(session({ secret: process.env.SECRET }));
 app.use(bodyParser.json());
 app.use(express.json());
+app.use(cookieParser());
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(
@@ -21,8 +24,8 @@ app.use(
     tempFileDir: path.join(__dirname, "temp"),
   })
 );
-app.use(cors());
 
+app.use(cors());
 app.use(flash());
 app.use((req, res, next) => {
   res.locals.msg_sucess = req.flash("msg_sucess");
@@ -35,5 +38,4 @@ app.use((req, res, next) => {
 
 app.use(routes);
 
-
-app.listen(3001)
+app.listen(3001);

@@ -1,4 +1,4 @@
-const database = require("../database/db");
+const database = require("../database/mysqldb");
 
 const conn = database.connect();
 
@@ -54,7 +54,7 @@ const userModel = {
     );
     return result.affectedRows;
   },
-  
+
   updateOne: async (user) => {
     const { email, password } = user;
     const [result] = await (

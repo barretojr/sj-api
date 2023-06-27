@@ -1,4 +1,4 @@
-const inventModel = require("../models/invent.model");
+const inventModel =require ("../models/invent.model");
 
 const getfull = async (req, res) => {
   try {
@@ -98,7 +98,7 @@ const updateInvent = async (
   valorestim,
   usuario,
   nserie,
-  data_compra
+  data_compra,
 ) => {
   try {
     const id = patrimonio;

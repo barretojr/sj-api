@@ -15,11 +15,11 @@ async function setRole(req, res, role, descRole) {
 }
 
 async function setPermission(req, res, permission, descPermission) {
-  const fountList = await rbac.findPermissionById(permission)
-  if (fountList){
+  const fountList = await rbac.findPermissionById(permission);
+  if (fountList) {
     return res.status().json({
-      message:"Permissão ja cadastrada",
-    })
+      message: "Permissão ja cadastrada",
+    });
   }
   try {
     await rbac.createPermission(permission, descPermission);
@@ -65,9 +65,9 @@ async function userPermission(req, res, user, permission) {
   }
 }
 
-async function roleUser(req, res, role, user) {
+async function roleUser(req, res, roles, users) {
   try {
-    await rbac.updateUserRole(role, user);
+    await rbac.updateUserRole(roles, users);
 
     res.status(200);
   } catch (error) {

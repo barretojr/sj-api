@@ -1,4 +1,4 @@
-const database = require("../database/db");
+const database = require('../database/mysqldb')
 
 const conn = database.connect();
 
@@ -41,9 +41,11 @@ const inventModel = {
     const [rows] = await (await conn).execute('SELECT * FROM Inventario');
     const formattedRows = rows.map((row) => {
       if (row.data_compra !== null) {
-        const dateValue = row.data_compra.toISOString();
-        const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
-        const formattedDataCompra = new Date(dateValue).toLocaleDateString('pt-BR', options);
+        const formattedDataCompra = new Date(row.data_compra).toLocaleDateString('pt-BR', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit'
+        });
         return { ...row, formattedDataCompra };
       } else {
         return { ...row, data_compra: 'Sem data' };
@@ -51,6 +53,7 @@ const inventModel = {
     });
     return formattedRows;
   },
+  
 
   findById: async (idpatrimonio) => {
     const [rows] = await (

@@ -23,7 +23,7 @@ module.exports = {
       req.logout();
       return next();
     }
-    req.flash("msg_none", "Você foi deslogado.");
+    req.flash("msg_none", "Faça o login novamente para continuar.");
     res.redirect("/user/login");
   },
 };
