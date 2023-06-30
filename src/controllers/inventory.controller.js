@@ -72,7 +72,7 @@ const createInvent = async (
   try {
     await inventModel.create(invent);
     
-    res.redirect("/inventario/");
+    return res.redirect("/inventario/");
   } catch (error) {
     console.log(error);
     return res.status(500).json({
