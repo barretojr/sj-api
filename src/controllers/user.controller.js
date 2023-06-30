@@ -92,7 +92,8 @@ async function registerRouteHandler(req, res, username, name, email, password) {
     return res.status(400).json({ message: "Usuário já está em uso" });
   }
 
-  if (!password || password.length < 8) {
+  if (!password || password.length < 1) {
+    console.log(username, name, email, password);
     return res
       .status(400)
       .json({ message: "A senha deve ter pelo menos 8 caracteres." });
@@ -122,7 +123,9 @@ async function registerRouteHandler(req, res, username, name, email, password) {
       refresh_token: token,
     });
   } catch (error) {
-    return res.status(500).json({ message: "Erro interno do servidor" });
+    return res
+      .status(500)
+      .json({ message: "Erro interno do servidor", erro: error });
   } finally {
     await userModel.closeConection();
   }
@@ -193,25 +196,16 @@ async function resetPasswordRouteHandler(
   try {
     const foundUser = await userModel.findAll({ email: email });
     if (!foundUser) {
-      return res.status(400).json({
-        errors: { email: ["Ocorreu algum erro ao encontrar o email"] },
-      });
+      return res.status(400);
     }
-    // Validar a senha
     if (password.length < 8) {
-      return res.status(400).json({
-        errors: {
-          password: ["A senha deve ter no mínimo 8 caracteres."],
-        },
-      });
+      return res.status(400);
     }
     if (password !== cPass) {
-      return res.status(400).json({
-        errors: {
-          password: ["A senha e a confirmação de senha devem corresponder."],
-        },
-      });
+      return res.status(400);
     }
+    const listenToken = await userModel.listenToekn({token: token,email: email})
+    
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 

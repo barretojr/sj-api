@@ -7,8 +7,10 @@ const {
 } = require( "../controllers/user.controller");
 
 router.post("/registrar", async (req, res) => {
-  const { username, name, email, password } = req.body;
+  const { username, name, email } = req.body;
+  const password = req.body.password
   await registerRouteHandler(req, res, username, name, email, password);
+  
 });
 
 router.post("/esqueci-senha", async (req, res) => {

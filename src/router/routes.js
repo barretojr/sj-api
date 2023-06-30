@@ -11,7 +11,7 @@ const rbac = require("./rbac.route");
 app.use("/api", user);
 app.use("/home", home);
 app.use("/inventario", inventario); //precisa ser admin
-app.use("/setuser", setuser);
+app.use("/user", setuser);
 app.use("/dashboard", dashboard); //precisa ser usuario padrão
 app.use("/rbac", rbac); //precisa ser admin
 

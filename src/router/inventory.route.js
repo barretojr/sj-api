@@ -1,5 +1,4 @@
 const express = require("express");
-const { eAdmin, eUser } = require("../middleware/eAuth");
 const router = express.Router();
 
 const {
@@ -12,29 +11,12 @@ const {
 
 router.get("/", async (req, res) => {
   try {
-    const inventario = await getfull(req, res);    
-    const inventarioSemReferenciasCirculares = removeReferenciasCirculares(inventario);
-    return res.json({ listagem: inventarioSemReferenciasCirculares });
+    const inventario = await getfull(req, res);
   } catch (error) {
     console.log("erro na rota /", error);
     return res.status(500)
   }
 });
-
-function removeReferenciasCirculares(objeto) {
-  const cache = new Set();
-  return JSON.parse(
-    JSON.stringify(objeto, function (chave, valor) {
-      if (typeof valor === "object" && valor !== null) {
-        if (cache.has(valor)) {          
-          return;
-        }
-        cache.add(valor);
-      }
-      return valor;
-    })
-  );
-}
 
 
 router.get("/show/:id", async (req, res) => {

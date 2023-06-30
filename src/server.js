@@ -1,6 +1,5 @@
 require("dotenv").config();
 const express =require("express");
-const session =require ("express-session");
 const cookieParser = require("cookie-parser")
 const bodyParser =require ("body-parser");
 const cors =require ("cors");
@@ -9,14 +8,11 @@ const fileUpload =require ("express-fileupload");
 const app = express();
 const fs = require ("fs");
 const routes =require ("./router/routes");
-const flash =require ("connect-flash");
 
 
-app.use(session({ secret: process.env.SECRET }));
 app.use(bodyParser.json());
 app.use(express.json());
 app.use(cookieParser());
-
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(
   fileUpload({
@@ -26,15 +22,7 @@ app.use(
 );
 
 app.use(cors());
-app.use(flash());
-app.use((req, res, next) => {
-  res.locals.msg_sucess = req.flash("msg_sucess");
-  res.locals.msg_none = req.flash("msg_none");
-  res.locals.msg_error = req.flash("msg_error");
-  res.locals.error = req.flash("error");
-  res.locals.user = req.user || null;
-  next();
-});
+
 
 app.use(routes);
 

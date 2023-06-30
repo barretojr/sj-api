@@ -4,14 +4,12 @@ const getfull = async (req, res) => {
   try {
     const foundInvent = await inventModel.showAll();
     if (!foundInvent) {
-      req.flash("msg_error", "Erro ao listar inventario");
       return res.status(400).json({
         message: "Não foi possivel encontar o inventario",
       });
     }
     res.json({ listagem: foundInvent });
   } catch (error) {
-    req.flash("msg_error", "Ocorreu um erro");
     return res.status(500).json({
       message: "erro ao listar",
     });
@@ -30,7 +28,6 @@ const getInvent = async (req, res, patrimonio) => {
     }
     res.json({ listagem: foundInvent });
   } catch (error) {
-    req.flash("msg_error", "Ocorreu um erro");
     return res.status(500).json({
       message: "item não encontrado",
     });
@@ -53,7 +50,7 @@ const createInvent = async (
   data_compra
 ) => {
   const foundInvent = await inventModel.findById(patrimonio);
-  if (foundInvent) {
+  if (!foundInvent) {
     return res.status(400).json({ message: "item já cadastrado" });
   }
   const valorestimNum = Number(
@@ -74,11 +71,10 @@ const createInvent = async (
   };
   try {
     await inventModel.create(invent);
-    req.flash("msg_none", "Item cadastrado");
+    
     res.redirect("/inventario/");
   } catch (error) {
     console.log(error);
-    req.flash("msg_error", "Ocorreu um erro");
     return res.status(500).json({
       message: "Erro interno do servidor",
     });
@@ -124,10 +120,8 @@ const updateInvent = async (
       data_compra: formattedDate,
     };
     await inventModel.update(id, invent);
-    req.flash("msg_none", "Item Alterado");
     return res.redirect("/inventario/");
   } catch (error) {
-    req.flash("msg_error", "Ocorreu um erro");
     return res.status(500).json({
       message: "Erro interno do servidor",
     });
@@ -146,10 +140,8 @@ const deleteInvent = async (req, res, patrimonio) => {
     }
     await inventModel.delete(patrimonio);
 
-    req.flash("msg_none", "Item excluido com sucesso");
     return res.redirect("/inventario");
   } catch (error) {
-    req.flash("msg_error", "Ocorreu um erro ao excluir o item");
     return res.status(500).json({
       message: "ocorreu um erro ao excluir o item",
     });

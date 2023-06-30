@@ -5,74 +5,67 @@ const conn = database.connect();
 const userModel = {
   create: async (user) => {
     const { username, name, email, password } = user;
-    const [result] = await (
-      await conn
-    ).execute(
-      `
-        INSERT INTO users (username, name, email, password, created_at, updated_at)
-        VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)`,
-      [username, name, email, password]
-    );
-    return result.insertId;
+    const [result] = await (await conn).query("CALL createUser(?, ?, ?, ?)", [
+      username,
+      name,
+      email,
+      password,
+    ]);
+    return result[0].userId;
   },
 
   findById: async (id) => {
-    const [rows] = await (
-      await conn
-    ).execute("SELECT * FROM users WHERE userId = ?", [id]);
+    const [rows] = await (await conn).query("CALL getUserById(?)", [id]);
     return rows[0];
   },
 
   findAll: async () => {
-    const [rows] = await (await conn).execute("SELECT * FROM users");
-    await (
-      await conn
-    ).release;
-    return rows[0];
+    const [rows] = await (await conn).query("CALL getAllUsers()");
+    return rows;
   },
 
   update: async (id, user) => {
     const { username, name, email, password } = user;
-    const [result] = await (
-      await conn
-    ).execute(
-      `UPDATE users
-        SET username = ?, name = ?, email = ?, password = ?,  update_at=CURRENT_TIMESTAMP
-        WHERE id = ?`,
-      [username, name, email, password, id]
-    );
-    return result.affectedRows;
+    const [result] = await (await conn).query("CALL updateUser(?, ?, ?, ?, ?)", [
+      id,
+      username,
+      name,
+      email,
+      password,
+    ]);
+    return result[0].affectedRows;
   },
 
-  updateToken: async (user) => {
-    const { email, token } = user;
-    const [result] = await (
-      await conn
-    ).execute(
-      `UPDATE users SET token=?, updated_at=CURRENT_TIMESTAMP WHERE email=?;`,
-      [token, email]
-    );
-    return result.affectedRows;
+  updateToken: async (params) => {
+    const { token, email } = params;
+    const [result] = await (await conn).query("CALL updateToken(?, ?)", [
+      token,
+      email,
+    ]);
+    return result[0].affectedRows;
+  },
+
+  listenToken: async (params) => {
+    const { token, email } = params;
+    const [result] = await (await conn).query("CALL getUserByTokenAndEmail(?, ?)", [
+      token,
+      email,
+    ]);
+    return result[0];
   },
 
   updateOne: async (user) => {
     const { email, password } = user;
-    const [result] = await (
-      await conn
-    ).execute(
-      `UPDATE users
-        SET  password = ?,  update_at=CURRENT_TIMESTAMP
-        WHERE email = ?`,
-      [password, email]
-    );
-    return result.affectedRows;
+    const [result] = await (await conn).query("CALL updatePasswordByEmail(?, ?)", [
+      email,
+      password,
+    ]);
+    return result[0].affectedRows;
   },
 
   delete: async (id) => {
-    const [result] = await (
-      await conn
-    ).execute("DELETE FROM users WHERE id = ?", [id]);
-    return result.affectedRows;
+    const [result] = await (await conn).query("CALL deleteUserById(?)", [id]);
+    return result[0].affectedRows;
   },
 
   closeConection: async () => {

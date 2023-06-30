@@ -1,11 +1,12 @@
 {
   "name": "sjapi",
-  "version": "1.0.0",
+  "version": "1.0.1a",
   "description": "",
   "main": "index.js",
   "scripts": {
     "test": "jest",
-    "start": "nodemon src/server.js"
+    "start": "nodemon src/server.js",
+    "dev": "node src/server.js"
   },
   "keywords": [],
   "author": "",

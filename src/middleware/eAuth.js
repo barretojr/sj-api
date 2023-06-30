@@ -3,10 +3,6 @@ module.exports = {
     if (req.isAuthenticated && req.user.eAdmin == 1) {
       return next();
     }
-    req.flash(
-      "msg_error",
-      "Acesso restrito. Você precisa ser um administrador."
-    );
     return res.redirect("/user/login");
   },
 
@@ -14,7 +10,6 @@ module.exports = {
     if (req.isAuthenticated) {
       return next();
     }
-    req.flash("msg_error", "Faça o login para continuar.");
     return res.redirect("/user/login");
   },
 
@@ -23,7 +18,6 @@ module.exports = {
       req.logout();
       return next();
     }
-    req.flash("msg_none", "Faça o login novamente para continuar.");
     res.redirect("/user/login");
   },
 };
