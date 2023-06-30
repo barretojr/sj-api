@@ -4,11 +4,14 @@ const conn = database.connect();
 const rbac = {
   findRoleById: async (roleId) => {
     const [result] = await conn.execute("CALL FindRoleById(?)", [roleId]);
+    (await conn).release()
     return result[0];
+
   },
 
   createRole: async (descricao) => {
     const [result] = await conn.execute("CALL CreateRole(?)", [descricao]);
+    (await conn).release()
     return result[0].insertId;
   },
 
@@ -16,6 +19,7 @@ const rbac = {
     const [result] = await conn.execute("CALL FindPermissionById(?)", [
       permissionId,
     ]);
+    (await conn).release()
     return result[0];
   },
 
@@ -23,6 +27,7 @@ const rbac = {
     const [result] = await conn.execute("CALL CreatePermission(?)", [
       descricao,
     ]);
+    (await conn).release()
     return result[0].insertId;
   },
 
@@ -33,6 +38,7 @@ const rbac = {
       userId,
       roleId,
     ]);
+    (await conn).release()
     return result[0].affectedRows;
   },
 
@@ -43,6 +49,7 @@ const rbac = {
       userId,
       permissionId,
     ]);
+    (await conn).release()
     return result[0].affectedRows;
   },
 
@@ -53,19 +60,9 @@ const rbac = {
       permissionId,
       roleId,
     ]);
+    (await conn).release()
     return result[0].affectedRows;
-  },
-  closeConection: async () => {
-    try {
-      if (conn) {
-        await (
-          await conn
-        ).release;
-      }
-    } catch (error) {
-      console.log("erro ao fechar conexão", error);
-    }
-  },
+  }  
 };
 
 module.exports = rbac;

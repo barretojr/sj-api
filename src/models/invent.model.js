@@ -28,11 +28,13 @@ const inventModel = {
       nserie,
       data_compra,
     ]);
+    (await conn).release()
     return result[0].inventoryId;
   },
 
   showAll: async () => {
     const [rows] = await (await conn).query("CALL getAllInventory()");
+    (await conn).release()
     return rows;
   },
 
@@ -40,6 +42,7 @@ const inventModel = {
     const [rows] = await (
       await conn
     ).query("CALL getInventoryById(?)", [idpatrimonio]);
+    (await conn).release()
     return rows[0];
   },
 
@@ -57,6 +60,7 @@ const inventModel = {
         row.formattedDataCompra = "Sem data";
       }
     });
+    (await conn).release()
     return rows[0];
   },
 
@@ -84,24 +88,15 @@ const inventModel = {
       nserie,
       data_compra,
     ]);
+    (await conn).release()
     return result[0].affectedRows;
   },
 
   delete: async (id) => {
     const [result] = await (await conn).query("CALL deleteInventory(?)", [id]);
+    (await conn).release()
     return result[0].affectedRows;
-  },
-  closeConection: async () => {
-    try {
-      if (conn) {
-        await (
-          await conn
-        ).release;
-      }
-    } catch (error) {
-      console.log("erro ao fechar conexão", error);
-    }
-  },
+  }
 };
 
 module.exports = inventModel;

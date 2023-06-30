@@ -11,16 +11,19 @@ const userModel = {
       email,
       password,
     ]);
+    (await conn).release()
     return result[0].userId;
   },
 
   findById: async (id) => {
     const [rows] = await (await conn).query("CALL getUserById(?)", [id]);
+    (await conn).release()
     return rows[0];
   },
 
   findAll: async () => {
     const [rows] = await (await conn).query("CALL getAllUsers()");
+    (await conn).release()
     return rows;
   },
 
@@ -33,6 +36,7 @@ const userModel = {
       email,
       password,
     ]);
+    (await conn).release()
     return result[0].affectedRows;
   },
 
@@ -42,6 +46,7 @@ const userModel = {
       token,
       email,
     ]);
+    (await conn).release()
     return result[0].affectedRows;
   },
 
@@ -51,6 +56,7 @@ const userModel = {
       token,
       email,
     ]);
+    (await conn).release()
     return result[0];
   },
 
@@ -60,25 +66,16 @@ const userModel = {
       email,
       password,
     ]);
+    (await conn).release()
     return result[0].affectedRows;
   },
 
   delete: async (id) => {
     const [result] = await (await conn).query("CALL deleteUserById(?)", [id]);
+    (await conn).release()
     return result[0].affectedRows;
   },
-
-  closeConection: async () => {
-    try {
-      if (conn) {
-        await (
-          await conn
-        ).release;
-      }
-    } catch (error) {
-      console.log("erro ao fechar conexão", error);
-    }
-  },
+  
 };
 
 module.exports = userModel;
