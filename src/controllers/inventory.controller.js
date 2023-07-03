@@ -13,9 +13,7 @@ const getfull = async (req, res) => {
     return res.status(500).json({
       message: "erro ao listar",
     });
-  } finally {
-    await inventModel.closeConection();
-  }
+  } 
 };
 
 const getInvent = async (req, res, patrimonio) => {
@@ -31,9 +29,7 @@ const getInvent = async (req, res, patrimonio) => {
     return res.status(500).json({
       message: "item não encontrado",
     });
-  } finally {
-    await inventModel.closeConection();
-  }
+  } 
 };
 
 const createInvent = async (
@@ -78,9 +74,7 @@ const createInvent = async (
     return res.status(500).json({
       message: "Erro interno do servidor",
     });
-  } finally {
-    await inventModel.closeConection();
-  }
+  } 
 };
 
 const updateInvent = async (
@@ -125,9 +119,7 @@ const updateInvent = async (
     return res.status(500).json({
       message: "Erro interno do servidor",
     });
-  } finally {
-    await inventModel.closeConection();
-  }
+  } 
 };
 
 const deleteInvent = async (req, res, patrimonio) => {
@@ -145,9 +137,7 @@ const deleteInvent = async (req, res, patrimonio) => {
     return res.status(500).json({
       message: "ocorreu um erro ao excluir o item",
     });
-  } finally {
-    await inventModel.closeConection();
-  }
+  } 
 };
 
 module.exports = {

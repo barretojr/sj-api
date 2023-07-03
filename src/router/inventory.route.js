@@ -11,7 +11,7 @@ const {
 
 router.get("/", async (req, res) => {
   try {
-    const inventario = await getfull(req, res);
+    await getfull(req, res);
   } catch (error) {
     console.log("erro na rota /", error);
     return res.status(500)

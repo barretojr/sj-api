@@ -13,7 +13,7 @@ router.post("/registrar", async (req, res) => {
   
 });
 
-router.post("/esqueci-senha", async (req, res) => {
+router.post("/esqueci-senha", async (req, res) => {  
   const { email } = req.body;
   await forgotPasswordRouteHandler(req, res, email);
 });

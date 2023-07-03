@@ -24,8 +24,6 @@ async function listRouteHandler(req, res) {
     return res.status(500).json({
       message: "Ocorreu um erro ao listar os Usuários",
     });
-  } finally {
-    await userModel.closeConection();
   }
 }
 
@@ -80,8 +78,6 @@ async function loginRouteHandler(req, res, username, password) {
       message: "ocorreu um erro",
       error: error,
     });
-  } finally {
-    await userModel.closeConection();
   }
 }
 
@@ -126,14 +122,10 @@ async function registerRouteHandler(req, res, username, name, email, password) {
     return res
       .status(500)
       .json({ message: "Erro interno do servidor", erro: error });
-  } finally {
-    await userModel.closeConection();
   }
 }
 
-async function forgotPasswordRouteHandler(req, res) {
-  const { email } = req.body;
-
+async function forgotPasswordRouteHandler(req, res, email) {  
   try {
     const foundUser = await userModel.findAll({ email: email });
     if (!foundUser) {
@@ -163,6 +155,7 @@ async function forgotPasswordRouteHandler(req, res) {
       const mailSent = await transporter.sendMail(infomail);
       if (mailSent) {
         await userModel.updateToken(emailtoken);
+        console.log("atualizou token");
       }
 
       const dataSent = {
@@ -176,12 +169,10 @@ async function forgotPasswordRouteHandler(req, res) {
       return res.status(204).json({ data: dataSent });
     }
   } catch (error) {
-    console.log({ caiunocatch: error });
+    console.log({ caiunocatch1: error });
     return res
       .status(500)
       .json({ caiunocatch: "Ocorreu um erro ao processar a solicitação." });
-  } finally {
-    await userModel.closeConection();
   }
 }
 
@@ -198,14 +189,16 @@ async function resetPasswordRouteHandler(
     if (!foundUser) {
       return res.status(400);
     }
-    if (password.length < 8) {
-      return res.status(400);
-    }
     if (password !== cPass) {
       return res.status(400);
     }
-    const listenToken = await userModel.listenToekn({token: token,email: email})
-    
+    const listenToken = await userModel.listenToekn({
+      token: token,
+      email: email,
+    });
+    if (!listenToken) {
+      return res.status(401);
+    }
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
@@ -216,11 +209,7 @@ async function resetPasswordRouteHandler(
     return res.sendStatus(204);
   } catch (error) {
     console.error(error);
-    return res.status(500).json({
-      message: "Ocorreu um erro ao redefinir a senha.",
-    });
-  } finally {
-    await userModel.closeConection();
+    return res.status(500);
   }
 }
 
